@@ -8,6 +8,7 @@ try:
 except:
     pass
 
+
 class NFA:
     """A class for NFAs that can be constructed from a Regex"""
 
@@ -89,10 +90,10 @@ class NFA:
 
     def matches(self, s):
         # simulate an NFA or DFA (this code can work for both!)
-        current = self.epsilonClosure({self.s})
+        current = self.epsilon_closure({self.s})
 
         for x in s:
-            current = self.epsilonClosure(self.move(current, x))
+            current = self.epsilon_closure(self.move(current, x))
         if current & self.F == set():
             return False
         else:
@@ -104,7 +105,7 @@ class NFA:
             if state not in ext and (qs, c, state) in self.delta:
                 self.dfs(state, ext, c)
 
-    def epsilonClosure(self, qs):
+    def epsilon_closure(self, qs):
         """Returns the set of states reachable from those in qs without consuming any characters."""
         # pass  # DONE: write epsilon closure (see slides)
         res = set()
@@ -122,11 +123,11 @@ class NFA:
                     self.dfs(state, res, x)
         return res
 
-    def NFA_to_DFA(self):
+    def nfa_to_dfa(self):
         """Returns a DFA equivalent to self."""
         dfa = NFA()
         dfa.r = self.r
-        start_set = self.epsilonClosure({self.s})
+        start_set = self.epsilon_closure({self.s})
         start = State(frozenset(start_set))
         dfa.Q = {start}
         # DONE: Construct dfa from self (using subset algorithm)
@@ -139,7 +140,7 @@ class NFA:
             ext |= diff
             for c in dfa.Sigma:
                 for dstate in diff:
-                    current = self.epsilonClosure(self.move(dstate.name, c))
+                    current = self.epsilon_closure(self.move(dstate.name, c))
                     current_state = State(frozenset(current))
                     if current_state not in dfa.Q:
                         dfa.Q.add(current_state)
@@ -154,7 +155,7 @@ class NFA:
     def statecount(self):
         return len(self.Q)
 
-    def isDFA(self):
+    def is_dfa(self):
         # Checks to see if the NFA is also a DFA:
         # i.e., reports True iff self.delta is a function
         for q in self.Q:
@@ -166,9 +167,9 @@ class NFA:
                     outgoingset.add(e[1])
         return True
 
-    def minimizeDFA(self):
+    def minimize_dfa(self):
         """Takes a DFA and returns a minimized DFA"""
-        if not self.isDFA():
+        if not self.is_dfa():
             raise "minimizeDFA must be provided a DFA"
 
         # Use partition refinement (to a fixpoint)
@@ -217,7 +218,7 @@ class NFA:
         return mdfa
 
     # generating visualizations of the NFA/DFA for understanding and debugging purposes
-    def generateSVG(self, file_name="nfa", title=True):
+    def generate_svg(self, file_name="nfa", title=True):
         """Writes the current NFA to a dot file and runs graphviz (must be locally installed!)"""
 
         # Setup
